@@ -362,10 +362,16 @@
 				$ch = curl_init($url);
 			}
 
+			$headers_array = array();
 			if ($timestamp && !$post_query) {
-				curl_setopt($ch, CURLOPT_HTTPHEADER,
-					array("If-Modified-Since: ".gmdate('D, d M Y H:i:s \G\M\T', $timestamp)));
+				array_push($headers_array, "If-Modified-Since: ".gmdate('D, d M Y H:i:s \G\M\T', $timestamp));
 			}
+
+			# Set accept headers since some sites require atom+xml or rss+xml
+			array_push($headers_array, "Accept: text/xml, text/html, application/atom+xml, application/rss+xml");
+
+			# Set the HTTP headers for the request
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers_array);
 
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout ? $timeout : FILE_FETCH_CONNECT_TIMEOUT);
 			curl_setopt($ch, CURLOPT_TIMEOUT, $timeout ? $timeout : FILE_FETCH_TIMEOUT);
